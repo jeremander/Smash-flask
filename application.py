@@ -1,12 +1,12 @@
 from flask import Flask
 
-from rand import random_melee_char
+# from rand import random_melee_char
 
 
 # print a nice greeting.
-def random_char():
-    char = random_melee_char()
-    return f'<p>{char}</p>\n'
+# def random_char():
+#     char = random_melee_char()
+#     return f'<p>{char}</p>\n'
 
 # some bits of text for the page.
 header_text = '''
@@ -17,8 +17,10 @@ footer_text = '</h1></body>\n</html>'
 application = Flask(__name__)
 
 # add a rule for the index page.
+# application.add_url_rule('/', 'index', (lambda: header_text +
+#     random_char() + footer_text))
 application.add_url_rule('/', 'index', (lambda: header_text +
-    random_char() + footer_text))
+    'BEEF' + footer_text))
 
 # # add a rule when the page is accessed with a name appended to the site
 # # URL.
@@ -30,4 +32,4 @@ if __name__ == "__main__":
     # Setting debug to True enables debug output. This line should be
     # removed before deploying a production app.
     #application.debug = True
-    application.run('0.0.0.0')
+    application.run()

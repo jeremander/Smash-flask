@@ -1,9 +1,9 @@
 from functools import lru_cache
 import json
 import logging
-import numpy as np
+# import numpy as np
 from pathlib import Path
-from typing import Dict
+from typing import Any, Dict
 
 DATA_DIR = Path(__file__).parent / 'static' / 'data'
 
@@ -15,17 +15,22 @@ class GameCharacters:
         assert all(wt >= 0.0 for wt in char_weights.values())
         self.game = game
         self.char_weights = char_weights
-        weight_sum = sum(char_weights.values())
-        char_probs = {char : wt / weight_sum for (char, wt) in char_weights.items()}
-        assert (len(char_probs) > 0)
-        self.chars, self.probs = zip(*char_probs.items())
-    def random(self) -> str:
-        """Generates a random game character according to the distribution."""
-        return np.random.choice(self.chars, p = self.probs)
-    def img_url(self, char: str) -> str:
-        """Returns path to the character's icon."""
-        return f'/static/data/{self.game}/img/{char}.png'
-        # return str(DATA_DIR / self.game / 'img' / (char + '.png'))
+        # weight_sum = sum(char_weights.values())
+        # char_probs = {char : wt / weight_sum for (char, wt) in char_weights.items()}
+        # assert (len(char_probs) > 0)
+        # self.chars, self.probs = zip(*char_probs.items())
+        self.chars, self.weights = zip(*char_weights.items())
+    # def random(self) -> str:
+    #     """Generates a random game character according to the distribution."""
+    #     return np.random.choice(self.chars, p = self.probs)
+    @property
+    def img_path(self) -> str:
+        return f'/static/data/{self.game}/img'
+    # def img_url(self, char: str) -> str:
+    #     """Returns path to the character's icon."""
+    #     return f'/static/data/{self.game}/img/{char}.png'
+    def to_dict(self) -> Dict[str, Any]:
+        return {'game' : self.game, 'char_weights' : self.char_weights}
     @classmethod
     @lru_cache()
     def from_json(cls, filename: str) -> 'GameCharacter':

@@ -1,0 +1,2 @@
+- different distributions (tier-based, high-tier only, special blend, etc.)
+- sliders for freqs

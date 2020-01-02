@@ -2,7 +2,7 @@
 
 {% block styles %}
 {{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+<link rel="stylesheet" href="{{url_for('.static', filename='css/style.css')}}">
 {% endblock %}
 
 {% block title %}
@@ -15,14 +15,28 @@ Random Character
   <div class="card-body">
     <div class="character">
       <p>
-        {{character}}
+        <span></span>
         <img class="char-icon" src="{{img_url}}" align="middle"></img>
       </p>
     </div>
     <br>
-    <form action="{{url_for('random_char', game = game)}}">
-      <button type="submit" class="btn btn-primary" id="random">Random</button>
-    </form>
+    <button onclick="gameChars.randomPressed()" class="btn btn-primary" id="random">Random</button>
   </div>
 </div>
+
+<!-- {% for i in range(3) %}
+  <div class="grid-container btn-group char-ctl">
+    <div><label>Character</label></div>
+    <div><a class="btn btn-secondary freq-ctl decr" href="#"><b>&#8211;</b></a></div>
+    <div><label class="freq">8</label></div>
+    <div><a class="btn btn-secondary freq-ctl incr" href="#"><b>+</b></a></div>
+  </div>
+{% endfor %} -->
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename = 'js/characters.js')}}"></script>
+<script src="{{url_for('.static', filename = 'js/controls.js')}}"></script>
 {% endblock %}

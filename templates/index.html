@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block title %}
+Random Character
+{% endblock %}
+
+{% block content %}
+<div class="card mb-3" id="content">
+  <div class="card-header"><h2>{{game}} Character</h2></div>
+  <div class="card-body">
+    <div class="character">
+      <p>
+        {{character}}
+        <img class="char-icon" src="{{img_url}}" align="middle"></img>
+      </p>
+    </div>
+    <br>
+    <form action="{{url_for('random_char', game = game)}}">
+      <button type="submit" class="btn btn-primary" id="random">Random</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -23,8 +23,9 @@ def get_characters(game: str):
 def random_char(game: str):
     try:
         GameCharacters.default(game)
-    except FileNotFoundError:
-        return f"<h1>Server Error</h1><h2>Unknown game '{game}'</h2>"
+    except FileNotFoundError as e:
+        return str(game + ', ' + str(e))
+        # return f"<h1>Server Error</h1><h2>Unknown game '{game}'</h2>"
     dists = GameCharacters.distributions(game)
     return render_template('index.html', game = game, dists = dists)
 

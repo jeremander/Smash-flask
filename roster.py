@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 GAMES_DIR = Path(__file__).parent / 'static' / 'games'
 VALID_WEIGHTS = set(range(11))
 
-class GameCharacters:
+class Roster:
     """Set of characters in a video game."""
     def __init__(self, game: str, char_weights: Dict[str, float]):
         assert len(char_weights) > 0
@@ -19,23 +19,23 @@ class GameCharacters:
         return {'game' : self.game, 'char_weights' : self.char_weights}
     @classmethod
     @lru_cache()
-    def from_json(cls, filename: str) -> 'GameCharacters':
+    def from_json(cls, filename: str) -> 'Roster':
         """Loads a character set from a JSON file."""
         with open(filename) as f:
             logging.debug(f'Loading characters from: {filename}')
             d = json.load(f)
         return cls(d['game'], d['char_weights'])
     @classmethod
-    def from_distribution(cls, game: str, dist: str) -> 'GameCharacters':
+    def from_distribution(cls, game: str, dist: str) -> 'Roster':
         """Loads the character set for the given game and distribution name."""
-        path = GAMES_DIR / game.lower() / f'{dist}.json'
+        path = GAMES_DIR / game.lower() / 'rosters' / f'{dist}.json'
         return cls.from_json(str(path))
     @classmethod
-    def default(cls, game: str) -> 'GameCharacters':
+    def default(cls, game: str) -> 'Roster':
         """Loads the default character set for the given game."""
         return cls.from_distribution(game, 'Default')
     @staticmethod
     def distributions(game: str) -> List[str]:
         """Given a game name, retrieves the list of JSON files (excluding suffixes) containing the relevant character data."""
-        path = GAMES_DIR / game.lower()
-        return [p.name[:-5] for p in path.glob('*.json')]
+        path = GAMES_DIR / game.lower() / 'rosters'
+        return sorted([p.name[:-5] for p in path.glob('*.json')])

@@ -23,8 +23,17 @@ Random Character
       </p>
     </div>
     <br>
-    <button onclick="gameChars.randomPressed()" class="btn btn-primary" id="random">Random</button>
+    <button class="btn btn-primary" id="random">Random</button>
   </div>
+</div>
+
+<div id="roster-menu">
+  <select>
+    {% for dist in dists %}
+    <option value="{{dist}}">{{dist}}</option>
+    {% endfor %}
+    <option value="*Custom*">*Custom*</option>
+  </select>
 </div>
 
 <br>
@@ -34,6 +43,6 @@ Random Character
 
 {% block scripts %}
 {{super()}}
-<script src="{{url_for('.static', filename = 'js/characters.js')}}"></script>
-<script src="{{url_for('.static', filename = 'js/controls.js')}}"></script>
+<script src="{{url_for('.static', filename = 'js/roster.js')}}"></script>
+<script src="{{url_for('.static', filename = 'js/main.js')}}"></script>
 {% endblock %}

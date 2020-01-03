@@ -42,15 +42,23 @@ button#random {
   box-shadow: 1px 1px 5px #606060;
 }
 
+#roster-menu {
+  text-align: center;
+  margin: auto;
+}
+
+#roster-menu select {
+  width: 14rem;
+  text-align: center;
+}
+
 #char-list {
   display: grid;
   align-items: center;
   margin: auto;
   max-width: 65rem;
-  /* max-width: 50%; */
-  /* width: minmax(36rem;  */
-  /* max-width: 36rem; */
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  justify-items: center;
 }
 
 .char-ctl {
@@ -58,7 +66,7 @@ button#random {
   grid-template-columns: 35px 30px 30px 30px;
   grid-gap: 8px;
   text-align: center;
-  padding: 4px 2px 4px 2px;
+  padding: 4px 1px 4px 1px;
 }
 
 .freq-ctl {

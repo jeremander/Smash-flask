@@ -1,3 +1,2 @@
-- different distributions (tier-based, high-tier only, special blend, etc.)
-- test zero case
+- button to prevent repeats
 - on/off toggle

@@ -42,19 +42,28 @@ button#random {
   box-shadow: 1px 1px 5px #606060;
 }
 
-.char-ctl {
+#char-list {
   display: grid;
-  grid-template-columns: auto auto auto auto;
-  width: 20%;
-  text-align: center;
+  align-items: center;
   margin: auto;
+  max-width: 65rem;
+  /* max-width: 50%; */
+  /* width: minmax(36rem;  */
+  /* max-width: 36rem; */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.char-ctl {
+  display: inline-grid;
+  grid-template-columns: 35px 30px 30px 30px;
+  grid-gap: 8px;
+  text-align: center;
   padding: 4px 2px 4px 2px;
 }
 
 .freq-ctl {
   height: 2rem;
   width: 2rem;
-  margin: 0px 4px 2px 4px;
   font-size: 14pt;
   font-weight: bold;
   text-align: center;
@@ -65,21 +74,19 @@ button#random {
   color: black;
 }
 
-/* a.decr {
-  padding-left: 6.25%;
+.incr {
+  /* padding: 0px 0px 0px 0px; */
+  padding-left: 10px;
 }
-
-a.incr {
-  padding-left: 5%;
-} */
 
 label.freq {
   height: 2rem;
   width: 2rem;
   text-align: center;
-  padding: 0px 4px 0px 4px;
   background-color: white;
   border: 1px solid black;
+  border-radius: 3px;
+  box-shadow: 1px 1px 1px #606060;
   font-size: 14pt;
   font-weight: bold;
 }

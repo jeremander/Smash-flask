@@ -10,13 +10,16 @@ Random Character
 {% endblock %}
 
 {% block content %}
+
+<div class="game-title" hidden>{{game}}</div>
+
 <div class="card mb-3" id="content">
   <div class="card-header"><h2>{{game}} Character</h2></div>
   <div class="card-body">
     <div class="character">
       <p>
         <span></span>
-        <img class="char-icon" src="{{img_url}}" align="middle"></img>
+        <img class="char-icon" src="/static/blank.png" align="middle"></img>
       </p>
     </div>
     <br>
@@ -24,14 +27,8 @@ Random Character
   </div>
 </div>
 
-<!-- {% for i in range(3) %}
-  <div class="grid-container btn-group char-ctl">
-    <div><label>Character</label></div>
-    <div><a class="btn btn-secondary freq-ctl decr" href="#"><b>&#8211;</b></a></div>
-    <div><label class="freq">8</label></div>
-    <div><a class="btn btn-secondary freq-ctl incr" href="#"><b>+</b></a></div>
-  </div>
-{% endfor %} -->
+<br>
+<div class="grid-container" id="char-list"></div>
 
 {% endblock %}
 

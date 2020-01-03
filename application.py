@@ -22,11 +22,11 @@ def get_characters(game: str):
 @app.route('/<game>/')
 def random_char(game: str):
     try:
-        game_chars = GameCharacters.default(game)
+        GameCharacters.default(game)
     except FileNotFoundError:
         return f"<h1>Server Error</h1><h2>Unknown game '{game}'</h2>"
-    img_url = game_chars.img_path + f'/{game_chars.chars[0]}.png'
-    return render_template('index.html', game = game, img_url = img_url)
+    dists = GameCharacters.distributions(game)
+    return render_template('index.html', game = game, dists = dists)
 
 
 

@@ -1,2 +1,3 @@
 - different distributions (tier-based, high-tier only, special blend, etc.)
-- sliders for freqs
+- test zero case
+- on/off toggle

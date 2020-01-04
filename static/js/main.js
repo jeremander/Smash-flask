@@ -23,4 +23,10 @@ $(document).ready(function () {
     loadCharacters(game, true);
   });
 
+  // refresh button pressed
+  $("#refresh-roster").click(function() {
+    // reset the roster with the current distribution
+    loadCharacters(game, true)
+  });
+
 });

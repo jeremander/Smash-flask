@@ -1,2 +1,3 @@
-- button to prevent repeats
+- refresh button
 - on/off toggle
+- enable UTF-8 URLs?

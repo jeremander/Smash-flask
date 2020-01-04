@@ -90,9 +90,9 @@ class Roster {
       let char = this.chars[i];
       let row = $("<div class='grid-container btn-group char-ctl' id='char-" + i.toString() + "'></div>");
       let charImg = $("<img>", { class: "char-icon", src: this.imgUrl(char), align: "middle" });
-      let decrBtn = $("<div><a class='btn btn-secondary freq-ctl decr' href='#'><b>&#8211;</b></a></div>");
+      let decrBtn = $("<div><a class='btn btn-secondary btn-push freq-ctl decr' href='#'><b>&#8211;</b></a></div>");
       let weight = $("<div><label class='freq'>" + Math.round(this.char_weights[char]).toString() + "</label></div>");
-      let incrBtn = $("<div><a class='btn btn-secondary freq-ctl incr' href='#'><b>+</b></a></div>");
+      let incrBtn = $("<div><a class='btn btn-secondary btn-push freq-ctl incr' href='#'><b>+</b></a></div>");
       row.append(charImg, decrBtn, weight, incrBtn);
       let freqLabel = row.find(".freq");
       let freq = parseFloat(freqLabel.text());

@@ -23,7 +23,7 @@ Random Character
       </p>
     </div>
     <br>
-    <button class="btn btn-primary" id="random">Random</button>
+    <button class="btn btn-primary btn-push" id="random">Random</button>
     <div class="form-check" id="no-repeat-check-form">
       <input class="form-check-input" type="checkbox" value="" id="no-repeat-check">
       <label class="form-check-label" for="no-repeat-check">
@@ -34,12 +34,13 @@ Random Character
 </div>
 
 <div id="roster-menu">
-  <select class="form-control form-control-sm">
+  <select>
     {% for dist in dists %}
     <option value="{{dist}}">{{dist}}</option>
     {% endfor %}
     <option value="Custom">Custom</option>
   </select>
+  <button id="refresh-roster" class="btn btn-primary btn-push">&#8634;</button>
 </div>
 
 <br>

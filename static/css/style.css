@@ -42,6 +42,17 @@ button#random {
   box-shadow: 1px 1px 5px #606060;
 }
 
+#no-repeat-check-form {
+  position: absolute;
+  right: 44px;
+  bottom: 30px;
+  font-size: 10pt;
+}
+
+#no-repeat-check-form .form-check-label {
+  padding-top: 2px;
+}
+
 #roster-menu {
   text-align: center;
   margin: auto;
@@ -50,6 +61,7 @@ button#random {
 #roster-menu select {
   width: 14rem;
   text-align: center;
+  margin: auto;
 }
 
 #char-list {

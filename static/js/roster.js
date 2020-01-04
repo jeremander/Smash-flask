@@ -1,6 +1,6 @@
 class Roster {
 
-  init(game, dist, char_weights) {
+  init(game, dist, char_weights, no_repeats = false) {
     this.game = game;
     this.dist = dist;
     this.char_weights = char_weights;
@@ -11,11 +11,12 @@ class Roster {
       this.weights.push(wt);
     }
     this._initWeights();
+    this.setNoRepeats(no_repeats);
   }
 
-  // initializes the cumulative weights for randomization
+  // initialize the cumulative weights for randomization
   _initWeights() {
-    var ctr = 0;
+    let ctr = 0;
     this.cumWeights = [];
     for (const wt of this.weights) {
       ctr += wt;
@@ -24,10 +25,10 @@ class Roster {
     this.total = ctr;
   }
 
-  // gets the number of playable characters
+  // get the number of playable characters
   numPlayable() {
-    var ctr = 0;
-    for(wt of this.weights) {
+    let ctr = 0;
+    for (const wt of this.weights) {
       if (wt > 0) {
         ctr += 1;
       }
@@ -38,27 +39,63 @@ class Roster {
     return ctr;
   }
 
-  // sets the weight of character i
+  // set the weight of character i
   setWeight(i, wt) {
-    var char = this.chars[i];
+    let char = this.chars[i];
     this.char_weights[char] = wt;
     this.weights[i] = wt;
     this._initWeights();
   }
 
-  // initializes DOM elements associated with the character set
+  // set the no_repeats flag
+  setNoRepeats(no_repeats) {
+    this.no_repeats = no_repeats
+    // set the check status
+    $("#no-repeat-check").prop("checked", no_repeats);
+    // if only using one character, deactivate the checkbox
+    $("#no-repeat-check").attr("disabled", this.numPlayable() == 1);
+    localStorage.setItem("no-repeats", no_repeats.toString());
+  }
+
+  // return true if the no_repeats = false or only one character is playable
+  allowRepeats() {
+    return (!this.no_repeats || (this.numPlayable() == 1));
+  }
+
+  // handle event of decrementing/incrementing character frequency
+  _changeFreq(e, func, cond, cls) {
+    e.preventDefault();
+    let btn = $(e.target).closest('div').find('.btn');
+    btn.addClass("disabled");
+    let row = $(e.target).closest(".char-ctl");
+    let i = parseInt(row.attr("id").split("-")[1]);
+    let freqLabel = row.find(".freq");
+    let freq = parseFloat(freqLabel.text());
+    let newFreq = func(freq);
+    freqLabel.text(newFreq);
+    roster.setWeight(i, newFreq);
+    row.find(cls).removeClass("disabled");
+    // may need to change allowability of repeats if only one character is now playable
+    this.setNoRepeats(this.no_repeats);
+    cacheCharacters();
+    if (!cond(newFreq)) {  // reactivate button if disable condition is not met
+      btn.removeClass("disabled");
+    }
+  }
+
+  // initialize DOM elements associated with the character set
   initElements() {
     $("#char-list").empty();
-    for (var i = 0; i < this.chars.length; i++) {
-      var char = this.chars[i];
-      var row = $("<div class='grid-container btn-group char-ctl' id='char-" + i.toString() + "'></div>");
-      var charImg = $("<img>", { class: "char-icon", src: this.imgUrl(char), align: "middle" });
-      var decrBtn = $("<div><a class='btn btn-secondary freq-ctl decr' href='#'><b>&#8211;</b></a></div>");
-      var weight = $("<div><label class='freq'>" + Math.round(this.char_weights[char]).toString() + "</label></div>");
-      var incrBtn = $("<div><a class='btn btn-secondary freq-ctl incr' href='#'><b>+</b></a></div>");
+    for (let i = 0; i < this.chars.length; i++) {
+      let char = this.chars[i];
+      let row = $("<div class='grid-container btn-group char-ctl' id='char-" + i.toString() + "'></div>");
+      let charImg = $("<img>", { class: "char-icon", src: this.imgUrl(char), align: "middle" });
+      let decrBtn = $("<div><a class='btn btn-secondary freq-ctl decr' href='#'><b>&#8211;</b></a></div>");
+      let weight = $("<div><label class='freq'>" + Math.round(this.char_weights[char]).toString() + "</label></div>");
+      let incrBtn = $("<div><a class='btn btn-secondary freq-ctl incr' href='#'><b>+</b></a></div>");
       row.append(charImg, decrBtn, weight, incrBtn);
-      var freqLabel = row.find(".freq");
-      var freq = parseFloat(freqLabel.text());
+      let freqLabel = row.find(".freq");
+      let freq = parseFloat(freqLabel.text());
       // deactivate buttons, if necessary
       if (freq <= 0) {
         row.find(".decr").addClass("disabled");
@@ -71,51 +108,50 @@ class Roster {
 
     // register clicks of decrement/increment buttons
 
-    $(".decr").click(function (e) {
-      e.preventDefault();
-      var row = $(this).parents(".char-ctl");
-      var i = parseInt(row.attr("id").split("-")[1]);
-      var freqLabel = row.find(".freq");
-      var freq = parseFloat(freqLabel.text());
-      var newFreq = freq - 1;
-      freqLabel.text(newFreq);
-      if (newFreq <= 0) {  // deactivate button
-        $(this).addClass("disabled");
-      }
-      row.find(".incr").removeClass("disabled");
-      roster.setWeight(i, newFreq);
-      cacheCharacters();
+    $(".decr").click(function(e) {
+      roster._changeFreq(e, x => x - 1, x => x <= 0, ".incr");
     });
 
     $(".incr").click(function (e) {
-      e.preventDefault();
-      var row = $(this).parents(".char-ctl");
-      var i = parseInt(row.attr("id").split("-")[1]);
-      var freqLabel = row.find(".freq");
-      var freq = parseFloat(freqLabel.text());
-      var newFreq = freq + 1;
-      freqLabel.text(newFreq);
-      if (newFreq >= 10) {  // deactivate button
-        $(this).addClass("disabled");
-      }
-      row.find(".decr").removeClass("disabled");
-      roster.setWeight(i, newFreq);
-      cacheCharacters();
+      roster._changeFreq(e, x => x + 1, x => x >= 10, ".decr");
     });
   }
 
   // random character as a string
   random() {
-    if (this.total == 0) {
-      // degenerate case: generate uniformly at random
-      var i = Math.floor(Math.random() * this.chars.length);
-      return this.chars[i];
-    }
-    var r = Math.floor(Math.random() * this.total);
-    for (var i = 0; i < this.chars.length; i++) {
-      if (r < this.cumWeights[i]) {
-        return this.chars[i];
+    let curChar = $("#char-name").text();
+    let numPlayable = this.numPlayable();
+    let repeatsAllowed = this.allowRepeats();
+    var char;
+    if ((numPlayable == 1) || ((numPlayable == 2) && !repeatsAllowed)) {
+      // only one choice is possible
+      for(let i = 0; i < this.chars.length; i++) {
+        if (this.weights[i] > 0) {
+          char = this.chars[i];
+          if (repeatsAllowed || (char != curChar)) {
+            return char;
+          }
+        }
       }
+    }
+    while (true) {
+      if (this.total == 0) {
+        // degenerate case: all zero weights (generate uniformly at random)
+        let i = Math.floor(Math.random() * this.chars.length);
+        char = this.chars[i];
+      }
+      // "usual" case: generate random integer
+      let r = Math.floor(Math.random() * this.total);
+      for (let i = 0; i < this.chars.length; i++) {
+        if (r < this.cumWeights[i]) {
+          char = this.chars[i];
+          break;
+        }
+      }
+      if (repeatsAllowed || (char != curChar)) {
+        return char;
+      }
+      // otherwise keep looping until we don't generate a repeat
     }
   }
 
@@ -127,11 +163,11 @@ class Roster {
   // "Random" button pressed
   randomPressed(e) {
     // select a random character
-    var char = this.random();
+    let char = this.random();
     // change the character text
-    $(".character>p>span").text(char);
+    $("#char-name").text(char);
     // set the image URL
-    $(".character img").attr("src", this.imgUrl(char));
+    $("#char-img").attr("src", this.imgUrl(char));
   }
 }
 
@@ -140,29 +176,29 @@ var roster = new Roster();
 
 // caches character data in local storage
 function cacheCharacters() {
-  var rosterStr = JSON.stringify(roster);
+  let rosterStr = JSON.stringify(roster);
   localStorage.setItem(roster.game + "-roster", rosterStr);
-  var dist = localStorage.getItem("roster-dist");
-  if (dist == "*Custom*") {
-    // save the default roster as *Custom*
+  let dist = localStorage.getItem("roster-dist");
+  if (dist == "Custom") {
+    // save the default roster as Custom
     localStorage.setItem(roster.game + "-default-roster", rosterStr);
   }
 }
 
 // load character data, initialize page
 function loadCharacters(game, force = false) {
-  var dist = localStorage.getItem("roster-dist");
+  let dist = localStorage.getItem("roster-dist");
   if (dist === null) {
     dist = "Default";
   }
   $("#roster-menu select").val(dist).prop("selected", true);
-  var value = null;
-  if (dist == "*Custom*") {
-    // retrieve data from roster last saved as *Custom*
+  let value = null;
+  if (dist == "Custom") {
+    // retrieve data from roster last saved as Custom
     value = localStorage.getItem(game + "-default-roster");
     force = false;
     if (value === null) {
-      // no *Custom* roster exists, so initialize it to Default
+      // no Custom roster exists, so initialize it to Default
       dist = "Default";
     }
   }
@@ -170,6 +206,7 @@ function loadCharacters(game, force = false) {
     // try to load roster from cache
     value = localStorage.getItem(game + "-roster");
   }
+  let no_repeats = localStorage.getItem("no-repeats") == "true";
   if (force || (value === null)) {
     // load data from JSON on server
     $.ajax({
@@ -177,15 +214,15 @@ function loadCharacters(game, force = false) {
       dataType: 'json',
       async: false,
       success: function (data) {
-        roster.init(data.game, dist, data.char_weights);
+        roster.init(data.game, dist, data.char_weights, no_repeats);
       }
     });
     cacheCharacters();
   }
   else {
     // load data from cache
-    var obj = JSON.parse(value);
-    roster.init(obj.game, obj.dist, obj.char_weights);
+    let obj = JSON.parse(value);
+    roster.init(obj.game, obj.dist, obj.char_weights, no_repeats);
   }
   roster.initElements();
 }

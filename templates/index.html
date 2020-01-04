@@ -18,21 +18,27 @@ Random Character
   <div class="card-body">
     <div class="character">
       <p>
-        <span></span>
-        <img class="char-icon" src="/static/blank.png" align="middle"></img>
+        <span id="char-name"></span>
+        <img id="char-img" class="char-icon" src="/static/blank.png" align="middle"></img>
       </p>
     </div>
     <br>
     <button class="btn btn-primary" id="random">Random</button>
+    <div class="form-check" id="no-repeat-check-form">
+      <input class="form-check-input" type="checkbox" value="" id="no-repeat-check">
+      <label class="form-check-label" for="no-repeat-check">
+        No Repeats
+      </label>
+    </div>
   </div>
 </div>
 
 <div id="roster-menu">
-  <select>
+  <select class="form-control form-control-sm">
     {% for dist in dists %}
     <option value="{{dist}}">{{dist}}</option>
     {% endfor %}
-    <option value="*Custom*">*Custom*</option>
+    <option value="Custom">Custom</option>
   </select>
 </div>
 

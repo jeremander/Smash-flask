@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 GAMES_DIR = Path(__file__).parent / 'static' / 'games'
-VALID_WEIGHTS = set(range(11))
+VALID_WEIGHTS = set(range(-11, 11))
 
 class Roster:
     """Set of characters in a video game."""

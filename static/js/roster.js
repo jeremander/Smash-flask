@@ -1,3 +1,16 @@
+function setCharBtnState(btn, pressed) {
+  if (pressed) {
+    btn.css("filter", "brightness(67%) opacity(67%)");
+    btn.css("transform", "translate(1px, 1px)");
+    btn.data("pressed", true);
+  }
+  else {
+    btn.css("filter", "");
+    btn.css("transform", "");
+    btn.data("pressed", false);
+  }
+}
+
 class Roster {
 
   init(game, dist, char_weights, no_repeats = false) {
@@ -19,10 +32,12 @@ class Roster {
     let ctr = 0;
     this.cumWeights = [];
     for (const wt of this.weights) {
-      ctr += wt;
+      ctr += Math.max(0, wt);  // only count nonnegative weights
       this.cumWeights.push(ctr);
     }
     this.total = ctr;
+    // console.log(this.char_weights);
+    // console.log(this.cumWeights);
   }
 
   // get the number of playable characters
@@ -62,40 +77,70 @@ class Roster {
     return (!this.no_repeats || (this.numPlayable() == 1));
   }
 
+  // caches character data in local storage
+  cacheCharacters() {
+    let rosterStr = JSON.stringify(this);
+    localStorage.setItem(this.game + "-roster", rosterStr);
+    let dist = localStorage.getItem("roster-dist");
+    if (dist == "Custom") {
+      // save the default roster as Custom
+      localStorage.setItem(this.game + "-default-roster", rosterStr);
+    }
+  }
+
   // handle event of decrementing/incrementing character frequency
   _changeFreq(e, func, cond, cls) {
     e.preventDefault();
-    let btn = $(e.target).closest('div').find('.btn');
+    let btn = $(e.target).closest("div").find(".btn");
     btn.addClass("disabled");
     let row = $(e.target).closest(".char-ctl");
     let i = parseInt(row.attr("id").split("-")[1]);
-    let freqLabel = row.find(".freq");
-    let freq = parseFloat(freqLabel.text());
+    let freqLbl = row.find(".freq");
+    let weight = this.weights[i];
+    let freq = (weight >= 0) ? weight : -(weight + 1);
     let newFreq = func(freq);
-    freqLabel.text(newFreq);
-    roster.setWeight(i, newFreq);
+    let newWeight = (weight >= 0) ? newFreq : -(newFreq + 1);
+    freqLbl.text(newFreq);
+    this.setWeight(i, newWeight);
+    // should always enable the other button
     row.find(cls).removeClass("disabled");
     // may need to change allowability of repeats if only one character is now playable
     this.setNoRepeats(this.no_repeats);
-    cacheCharacters();
+    this.cacheCharacters();
     if (!cond(newFreq)) {  // reactivate button if disable condition is not met
       btn.removeClass("disabled");
     }
   }
 
+  _toggleChar(e) {
+    e.preventDefault();
+    let row = $(e.target).closest(".char-ctl");
+    let i = parseInt(row.attr("id").split("-")[1]);
+    let weight = this.weights[i];
+    this.setWeight(i, -(weight + 1));  // transform weight to toggle active status
+    // may need to change allowability of repeats if only one character is now playable
+    this.setNoRepeats(this.no_repeats);
+    this.cacheCharacters();
+    setCharBtnState($(e.target).closest(".char-icon-btn"), weight >= 0);
+  }
+
   // initialize DOM elements associated with the character set
   initElements() {
+
     $("#char-list").empty();
     for (let i = 0; i < this.chars.length; i++) {
       let char = this.chars[i];
+      let weight = this.weights[i];
       let row = $("<div class='grid-container btn-group char-ctl' id='char-" + i.toString() + "'></div>");
-      let charImg = $("<img>", { class: "char-icon", src: this.imgUrl(char), align: "middle" });
+      let charIconBtn = $("<button>", {class: "btn-push char-icon-btn"});
+      let charIcon = $("<img>", { class: "char-icon", src: this.imgUrl(char), align: "middle" });
+      charIconBtn.append(charIcon);
+      setCharBtnState(charIconBtn, weight < 0);  // inactive if weight is negative
       let decrBtn = $("<div><a class='btn btn-secondary btn-push freq-ctl decr' href='#'><b>&#8211;</b></a></div>");
-      let weight = $("<div><label class='freq'>" + Math.round(this.char_weights[char]).toString() + "</label></div>");
+      let freq = (weight >= 0) ? weight : -(weight + 1);
+      let freqLbl = $("<div><label class='freq'>" + freq.toString() + "</label></div>");
       let incrBtn = $("<div><a class='btn btn-secondary btn-push freq-ctl incr' href='#'><b>+</b></a></div>");
-      row.append(charImg, decrBtn, weight, incrBtn);
-      let freqLabel = row.find(".freq");
-      let freq = parseFloat(freqLabel.text());
+      row.append(charIconBtn, decrBtn, freqLbl, incrBtn);
       // deactivate buttons, if necessary
       if (freq <= 0) {
         row.find(".decr").addClass("disabled");
@@ -106,7 +151,12 @@ class Roster {
       $("#char-list").append(row);
     }
 
-    // register clicks of decrement/increment buttons
+    // handle clicks of character icons
+    $(".char-icon-btn").click(function(e) {
+      roster._toggleChar(e);
+    });
+
+    // handle clicks of decrement/increment buttons
 
     $(".decr").click(function(e) {
       roster._changeFreq(e, x => x - 1, x => x <= 0, ".incr");
@@ -174,17 +224,6 @@ class Roster {
 // global character data
 var roster = new Roster();
 
-// caches character data in local storage
-function cacheCharacters() {
-  let rosterStr = JSON.stringify(roster);
-  localStorage.setItem(roster.game + "-roster", rosterStr);
-  let dist = localStorage.getItem("roster-dist");
-  if (dist == "Custom") {
-    // save the default roster as Custom
-    localStorage.setItem(roster.game + "-default-roster", rosterStr);
-  }
-}
-
 // load character data, initialize page
 function loadCharacters(game, force = false) {
   let dist = localStorage.getItem("roster-dist");
@@ -217,7 +256,7 @@ function loadCharacters(game, force = false) {
         roster.init(data.game, dist, data.char_weights, no_repeats);
       }
     });
-    cacheCharacters();
+    roster.cacheCharacters();
   }
   else {
     // load data from cache

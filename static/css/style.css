@@ -1,6 +1,8 @@
 :root {
   --main-bg-color: #deedf2;
   --shadow-color: #606060;
+  --decr-color: #ff1e31;
+  --incr-color: #399fff;
 }
 
 body {
@@ -82,11 +84,11 @@ button#random {
 }
 
 #refresh-roster {
-  margin: 0px 0px 3px 8px;
-  padding: 0px 0px 0px 1px;
+  margin: 0px 0px 2px 12px;
+  padding: 1px 0px 0px 1px;
   line-height: 10px;
-  height: 25px;
-  width: 25px;
+  height: 28px;
+  width: 28px;
   border: 0px;
   border-radius: 15px;
   font-size: 14pt;
@@ -150,16 +152,19 @@ button#random {
 
 .decr {
   padding: 7px 0px 0px 1px;
+  color: var(--decr-color);
 }
 
 .incr {
   padding: 7px 0px 0px 1px;
+  color: var(--incr-color);
 }
 
 label.freq {
   height: 32px;
   width: 32px;
   margin-top: 1px;
+  padding-top: 1px;
   text-align: center;
   background-color: white;
   border: 1px solid black;

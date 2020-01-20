@@ -110,6 +110,7 @@ class Roster {
     if (!cond(newFreq)) {  // reactivate button if disable condition is not met
       btn.removeClass("disabled");
     }
+    // btn.blur();
   }
 
   _toggleChar(e) {
@@ -136,7 +137,7 @@ class Roster {
       let charIcon = $("<img>", { class: "char-icon", src: this.imgUrl(char), align: "middle" });
       charIconBtn.append(charIcon);
       setCharBtnState(charIconBtn, weight < 0);  // inactive if weight is negative
-      let decrBtn = $("<div><a class='btn btn-secondary btn-push freq-ctl decr' href='#'><b>&#8211;</b></a></div>");
+      let decrBtn = $("<div><a ontouchstart='' class='btn btn-secondary btn-push freq-ctl decr' href='#'><b>&#8211;</b></a></div>");
       let freq = (weight >= 0) ? weight : -(weight + 1);
       let freqLbl = $("<div><label class='freq'>" + freq.toString() + "</label></div>");
       let incrBtn = $("<div><a class='btn btn-secondary btn-push freq-ctl incr' href='#'><b>+</b></a></div>");
@@ -162,7 +163,7 @@ class Roster {
       roster._changeFreq(e, x => x - 1, x => x <= 0, ".incr");
     });
 
-    $(".incr").click(function (e) {
+    $(".incr").click(function(e) {
       roster._changeFreq(e, x => x + 1, x => x >= 10, ".decr");
     });
   }
